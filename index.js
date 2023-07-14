@@ -15,6 +15,10 @@ const removeUser = (socketId)=>{
     users = users.filter(user => user.socketId !== socketId)
 }
 
+const getUser = (userId) => {
+    return users.find(user => user.userId === userId)
+}
+
 io.on("connection", (socket)=>{
     //quando mi connetto
     console.log("L'utente è connesso")
@@ -26,6 +30,13 @@ io.on("connection", (socket)=>{
     })
 
     //invia e prendi messaggi
+    socket.on("sendMessage", ({senderId, receiverId, text})=>{
+        const user = getUser(receiverId)
+        io.to(user.socketId).emit("getMessage", {
+            senderId, 
+            text
+        })
+    })
 
     //quando mi disconnetto
     socket.on("disconnect", ()=>{
